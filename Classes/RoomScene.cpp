@@ -72,6 +72,10 @@ bool RoomScene::init()
 	this->addChild(btnBack, 2);
 	btnBack->addTouchEventListener(CC_CALLBACK_2(RoomScene::Back, this));
 
+	CCSprite * RoomScene = CCSprite::create("RoomScene.jpg");
+	RoomScene->setScale(1.1, 1.1);
+	RoomScene->setPosition(ccp(480, 310));
+	this->addChild(RoomScene, 1);
 	/**  you can create scene with following comment code instead of using csb file.
 	// 1. super init first
 	if ( !Layer::init() )

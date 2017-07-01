@@ -1,5 +1,7 @@
 #include "AppDelegate.h"
 #include "LogInScene.h"
+#include "GameScene.h"
+#include "HomeScene.h"
 
 USING_NS_CC;
 

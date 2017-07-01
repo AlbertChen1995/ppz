@@ -1,8 +1,29 @@
 #include "LogInScene.h"
+#include "HomeScene.h"
 #include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
 
 USING_NS_CC;
+#include "json/rapidjson.h"
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+#include "GameScene.h"
+#include <regex>
+using std::to_string;
+using std::regex;
+using std::match_results;
+using std::regex_match;
+using std::cmatch;
+using namespace rapidjson;
+
+
+using namespace cocostudio::timeline;
+
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+using namespace  rapidjson;
 
 using namespace cocostudio::timeline;
 
@@ -24,6 +45,28 @@ Scene* LogInScene::createScene()
 // on "init" you need to initialize your instance
 bool LogInScene::init()
 {
+	Size size = Director::getInstance()->getVisibleSize();
+	visibleHeight = size.height;
+	visibleWidth = size.width;
+
+	textField = TextField::create("Player Name", "Arial", 30);
+	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 4 * 3));
+	this->addChild(textField, 2);
+
+
+	auto button = Button::create();
+	button->setTitleText("Login");
+	button->setTitleFontSize(30);
+	button->setPosition(Size(visibleWidth / 2, visibleHeight / 2));
+	this->addChild(button, 2);
+
+	button->addTouchEventListener(CC_CALLBACK_2(LogInScene::login, this));
+
+	CCSprite * LoginScreen = CCSprite::create("LoginScreen.jpg");
+	LoginScreen->setScale(0.6, 0.6);
+	LoginScreen->setPosition(ccp(400, 330));
+	this->addChild(LoginScreen);
+//	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.
 	// 1. super init first
 	if ( !Layer::init() )
@@ -84,9 +127,28 @@ bool LogInScene::init()
 		return false;
 	}
 
-	    auto rootNode = CSLoader::createNode("MainScene.csb");
+//	    auto rootNode = CSLoader::createNode("MainScene.csb");
 
-	    addChild(rootNode);
+//	    addChild(rootNode);
 
 	return true;
+}
+void LogInScene::login(Ref *pSender, Widget::TouchEventType type) {
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = HomeScene::createScene(textField->getString());
+		Director::getInstance()->replaceScene(scene);
+			/*auto request = new HttpRequest();
+			request->setUrl("http://localhost:8080/login");
+			request->setRequestType(HttpRequest::Type::POST);
+			request->setResponseCallback(CC_CALLBACK_2(LoginScene::onHttpRequestCompleted, this));
+
+			string text = textField->getString();
+			string s = "username=" + text;
+			log(s.c_str());
+			const char* postData = s.c_str();
+			request->setRequestData(postData, strlen(postData));
+			request->setTag("login");
+			HttpClient::getInstance()->send(request);
+			request->release();*/
+	}
 }

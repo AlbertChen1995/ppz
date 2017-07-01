@@ -1,4 +1,6 @@
 #include "HomeScene.h"
+#include "FindRoomScene.h"
+#include "RoomScene.h"
 #include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
 
@@ -26,8 +28,11 @@ using namespace  rapidjson;
 
 using namespace cocostudio::timeline;
 
-Scene* HomeScene::createScene()
+string userName;
+
+Scene* HomeScene::createScene(string userName_)
 {
+	userName = userName_;
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
@@ -48,21 +53,54 @@ bool HomeScene::init()
 	visibleHeight = size.height;
 	visibleWidth = size.width;
 
-	auto btnJoinRoom = Button::create();
-	btnJoinRoom->setTitleText("Login");
-	btnJoinRoom->setTitleFontSize(30);
-	btnJoinRoom->setPosition(Size(visibleWidth / 3, visibleHeight * 2 / 3));
-	this->addChild(btnJoinRoom, 2);
+	textField = TextField::create("Player Name", "Arial", 30);
+	textField->setText(userName);
+	textField->setPosition(Size(visibleWidth / 8, visibleHeight / 8 * 7));
+	this->addChild(textField, 2);
 
+	CCSprite * home = CCSprite::create("home.jpg");
+	home->setScale(1.3, 1.3);
+	home->setPosition(ccp(400, 325));
+	this->addChild(home);
+
+	CCSprite * sprite = CCSprite::create("touxiang.png");
+	sprite->setPosition(ccp(100, 500));
+	this->addChild(sprite);
+
+	auto btnJoinRoom = Button::create();
+	btnJoinRoom->setTitleText("Join Room");
+	btnJoinRoom->setTitleFontSize(30);
+	btnJoinRoom->setPosition(Size(visibleWidth / 4, visibleHeight * 2 / 3));
+	this->addChild(btnJoinRoom, 2);
 	btnJoinRoom->addTouchEventListener(CC_CALLBACK_2(HomeScene::JoinRoom, this));
 
 	auto btnCreateRoom = Button::create();
-	btnCreateRoom->setTitleText("Login");
+	btnCreateRoom->setTitleText("Create Room");
 	btnCreateRoom->setTitleFontSize(30);
-	btnCreateRoom->setPosition(Size(visibleWidth / 3, visibleHeight / 3));
+	btnCreateRoom->setPosition(Size(visibleWidth / 4, visibleHeight / 3));
 	this->addChild(btnCreateRoom, 2);
-
 	btnCreateRoom->addTouchEventListener(CC_CALLBACK_2(HomeScene::CreateRoom, this));
+
+	auto btnSimple = Button::create();
+	btnSimple->setTitleText("Simple");
+	btnSimple->setTitleFontSize(30);
+	btnSimple->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4));
+	this->addChild(btnSimple, 2);
+	btnSimple->addTouchEventListener(CC_CALLBACK_2(HomeScene::Simple, this));
+
+	auto btnNormal = Button::create();
+	btnNormal ->setTitleText("Normal");
+	btnNormal->setTitleFontSize(30);
+	btnNormal->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 2));
+	this->addChild(btnNormal, 2);
+	btnNormal->addTouchEventListener(CC_CALLBACK_2(HomeScene::Normal, this));
+
+	auto btnHard = Button::create();
+	btnHard->setTitleText("Hard");
+	btnHard->setTitleFontSize(30);
+	btnHard->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 3));
+	this->addChild(btnHard, 2);
+	btnHard->addTouchEventListener(CC_CALLBACK_2(HomeScene::Hard, this));
 	//	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.
 	// 1. super init first
@@ -129,4 +167,38 @@ bool HomeScene::init()
 	//	    addChild(rootNode);
 
 	return true;
+}
+void HomeScene::JoinRoom(Ref *pSender, Widget::TouchEventType type) {
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = FindRoomScene::createScene(userName);
+		Director::getInstance()->replaceScene(scene);
+	}
+}
+
+void HomeScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = RoomScene::createScene(userName);
+		Director::getInstance()->replaceScene(scene);
+	}
+}
+
+void HomeScene::Simple(Ref *pSender, Widget::TouchEventType type){
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = GameScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+	}
+}
+
+void HomeScene::Normal(Ref *pSender, Widget::TouchEventType type){
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = GameScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+	}
+}
+
+void HomeScene::Hard(Ref *pSender, Widget::TouchEventType type){
+	if (type == Widget::TouchEventType::ENDED) {
+		auto scene = GameScene::createScene();
+		Director::getInstance()->replaceScene(scene);
+	}
 }

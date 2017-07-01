@@ -1,6 +1,9 @@
-#include "GameScene.h"
-#include "cocostudio/CocoStudio.h"
+﻿#include "cocostudio/CocoStudio.h"
 #include "ui/CocosGUI.h"
+#include "GameScene.h"
+#include "SimpleAudioEngine.h"
+#include <vector>
+#include "AI.h"
 
 USING_NS_CC;
 
@@ -8,86 +11,152 @@ using namespace cocostudio::timeline;
 
 Scene* GameScene::createScene()
 {
-    // 'scene' is an autorelease object
-    auto scene = Scene::create();
-    
-    // 'layer' is an autorelease object
-    auto layer = GameScene::create();
+	// 'scene' is an autorelease object
+	auto scene = Scene::create();
 
-    // add layer as a child to scene
-    scene->addChild(layer);
+	// 'layer' is an autorelease object
+	auto layer = GameScene::create();
 
-    // return the scene
-    return scene;
+	// add layer as a child to scene
+	scene->addChild(layer);
+
+	// return the scene
+	return scene;
 }
 
 // on "init" you need to initialize your instance
 bool GameScene::init()
 {
 
-    /**  you can create scene with following comment code instead of using csb file.
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
-    
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	if (!Layer::init())
+	{
+		return false;
+	}
+	addMouseListener();
+	visibleSize = Director::getInstance()->getVisibleSize();
+	origin = Director::getInstance()->getVisibleOrigin();
+	CreateCard();
+	playcard();
+	return true;
+}
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+void GameScene::CreateCard() {
+	Sprite* card1 = Sprite::create("qi.png");
+	card1->setPosition(Vec2(origin.x + visibleSize.width/2 - card1->getContentSize().width,origin.y + card1->getContentSize().height/2));
+	Sprite* card2 = Sprite::create("bo.png");
+	card2->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + card2->getContentSize().height/2));
+	Sprite* card3 = Sprite::create("dang.png");
+	card3->setPosition(Vec2(origin.x + visibleSize.width / 2 + card3->getContentSize().width, origin.y + card3->getContentSize().height/2));
+	Sprite* robotCard1 = Sprite::create("paibei.png");
+	robotCard1->setPosition(Vec2(visibleSize.width / 2 - robotCard1->getContentSize().width, visibleSize.height - robotCard1->getContentSize().height / 2));
+	Sprite* robotCard2 = Sprite::create("paibei.png");
+	robotCard2->setPosition(Vec2(visibleSize.width / 2, visibleSize.height - robotCard1->getContentSize().height / 2));
+	Sprite* robotCard3 = Sprite::create("paibei.png");
+	robotCard3->setPosition(Vec2(visibleSize.width / 2 + robotCard3->getContentSize().width, visibleSize.height - robotCard3->getContentSize().height / 2));
+	this->addChild(card1, 2);
+	this->addChild(card2, 2);
+	this->addChild(card3, 2);
+	cards.push_back(card1);
+	cards.push_back(card2);
+	cards.push_back(card3);
+	type.push_back(1);
+	type.push_back(2);
+	type.push_back(3);
+	this->addChild(robotCard1, 2);
+	this->addChild(robotCard2, 2);
+	this->addChild(robotCard3, 2);
+}
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
-    
-	closeItem->setPosition(Vec2(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
+void GameScene::playcard() {
+	if (flag != 0) {
+		flag = 0;
+		played = !played;
+	}
+	addMouseListener();
+}
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+void GameScene::addMouseListener() {
+	
 
-    /////////////////////////////
-    // 3. add your codes below...
+	auto MouseListener = EventListenerMouse::create();
 
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
+	MouseListener->onMouseDown = CC_CALLBACK_1(GameScene::onMouseDown, this);
 
-    // add the label as a child to this layer
-    this->addChild(label, 1);
+	MouseListener->onMouseMove = NULL;//CC_CALLBACK_1(Home::onMouseMove, this);
 
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
+	MouseListener->onMouseUp = NULL;//CC_CALLBACK_1(fishing::onMouseUp, this);
 
-    // position the sprite on the center of the screen
-    sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(MouseListener, this);
 
-    // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
-    **/
-    
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
-    {
-        return false;
-    }
-    
-    auto rootNode = CSLoader::createNode("MainScene.csb");
+}
 
-    addChild(rootNode);
+void GameScene::onMouseDown(Event* event) {
+	EventMouse* mouse = (EventMouse*)event;
+	Point mouseposition = mouse->getLocation();
+	//float x1 = cards[2]->getPosition().x;
+	//float y1 = cards[2]->getPosition().y;
+	//log("%f,%f", mouseposition.x, mouseposition.y);
+	//log("%f,%f", x1, y1);
+	//log("%f,%f", cards[2]->getPosition().x, cards[2]->getPosition().y);
+	//log("%f,%f", cards[3]->getPosition().x, cards[3]->getPosition().y);
+	int cards_size = cards.size();
+	for (int i = 0; i < cards_size; i++) {
+		if ((mouseposition.x > cards[i]->getPosition().x - cards[i]->getContentSize().width / 2) && (mouseposition.x < cards[i]->getPosition().x + cards[i]->getContentSize().width / 2)
+			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)
+			&& (!played)) 
+		{
+			played = !played;
+			flag = type[i];
+			take_action(type[i]);
+		}			
+	}
 
-    return true;
+}
+
+void GameScene::take_action(int i) {
+	if (i = 1) {
+		//jiqi
+	}
+	else if (i = 2) {
+		//panduan bo
+	}
+	else {
+		//dang
+	}
+	animation();
+}
+
+void GameScene::animation() {
+	paibei = Sprite::create("paibei.png");
+	robotpaibei = Sprite::create("paibei.png");
+	paibei->setPosition(Vec2(origin.x + visibleSize.width / 2 + 2*paibei->getContentSize().width, origin.y + paibei->getContentSize().height));
+	this->addChild(paibei, 2);
+	robotpaibei->setPosition(Vec2(origin.x + visibleSize.width / 2 - 2 * paibei->getContentSize().width, visibleSize.height - robotpaibei->getContentSize().height / 2));
+	this->addChild(robotpaibei, 2);
+	play1position.x = visibleSize.width / 2;
+	play1position.y = visibleSize.height / 2 - paibei->getContentSize().height/2;
+	play2position.x = visibleSize.width / 2;
+	play2position.y = visibleSize.height / 2 + robotpaibei->getContentSize().height / 2;
+	//log("%f,%f", play1position.x, play1position.y);
+	auto move = MoveTo::create(1, play1position);
+	auto robot_move = MoveTo::create(1, play2position);
+	paibei->runAction(move);
+	robotpaibei->runAction(robot_move);
+	vs_robot();
+}
+
+void GameScene::vs_robot() {
+	int robot = normal();
+	//this->removeChild(paibei);
+	//this->removeChild(robotpaibei);
+	if (flag == 0) {
+		return;
+	}
+	else {
+		if (flag == 1 && robot == 2)
+			log("you lose!!!");
+		else if (flag == 2 && robot == 1)
+			log("you win!!!");
+		else playcard();
+	}
 }
