@@ -1,6 +1,8 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
-
+#include "cocostudio/CocoStudio.h"
+#include "HomeScene.h"
+#include "ui/CocosGUI.h"
 #include "json/rapidjson.h"
 #include "json/document.h"
 #include "json/writer.h"
@@ -9,12 +11,13 @@
 #include <regex>
 #include "SimpleAudioEngine.h"
 #include "cocos2d.h"
-#include "SimpleAudioEngine.h"
 #include <vector>
 #include <string>
 using std::vector;
 using std::string;
 USING_NS_CC;
+using namespace cocostudio::timeline;
+using namespace cocos2d::ui;
 
 class GameScene : public cocos2d::Layer
 {
@@ -53,6 +56,9 @@ public:
 	int robot_qi = 0;
 	bool ismove = true;
 	int robot_type = 0;
+
+	void GameScene::Back(Ref *pSender, Widget::TouchEventType type);
+	void GameScene::addUI();
 };
 
 #endif //

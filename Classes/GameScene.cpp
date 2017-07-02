@@ -11,9 +11,10 @@
 #include "GameScene.h"
 #include <regex>
 #include "SimpleAudioEngine.h"
+#include "HomeScene.h"
 
 USING_NS_CC;
-
+using namespace CocosDenshion;
 using namespace cocostudio::timeline;
 
 string userName3;
@@ -47,6 +48,9 @@ bool GameScene::init()
 	origin = Director::getInstance()->getVisibleOrigin();
 	CreateCard();
 	playcard();
+
+	addUI();
+
 	return true;
 }
 
@@ -235,4 +239,37 @@ void GameScene::remove_paibei(float dt) {
 void GameScene::remove_paimian(float dt) {
 	this->removeChild(paimian);
 	this->removeChild(robotpaimian);
+}
+
+void GameScene::addUI() {
+	CCSprite * RoomScene = CCSprite::create("RoomScene.jpg");
+	RoomScene->setScale(1.1, 1.1);
+	RoomScene->setPosition(ccp(480, 310));
+	this->addChild(RoomScene, 1);
+
+	auto btnBack = Button::create();
+	btnBack->setTitleText("Back");
+	btnBack->setTitleFontName("Felt");
+	btnBack->setTitleFontSize(30);
+	btnBack->loadTextureNormal("button1.png");
+	btnBack->setPosition(ccp(850, 70));
+	this->addChild(btnBack, 2);
+	btnBack->addTouchEventListener(CC_CALLBACK_2(GameScene::Back, this));
+
+	auto textField = TextField::create("Player Name", "Felt", 30);
+	textField->setText(userName3);
+	textField->setPosition(ccp(150, 150));
+	this->addChild(textField, 2);
+
+	CCSprite * sprite = CCSprite::create("touxiang.png");
+	sprite->setPosition(ccp(150, 200));
+	this->addChild(sprite, 2);
+}
+
+void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {
+	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+		auto scene = HomeScene::createScene(userName3);
+		Director::getInstance()->replaceScene(scene);
+	}
 }

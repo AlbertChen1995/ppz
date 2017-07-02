@@ -40,28 +40,34 @@ bool FindRoomScene::init()
 	visibleHeight = size.height;
 	visibleWidth = size.width;
 
-	textField = TextField::create("Player Name", "Arial", 30);
+	textField = TextField::create("Player Name", "Felt", 30);
 	textField->setText("Room List");
 	textField->setPosition(Size(visibleWidth / 4, visibleHeight / 8 * 7));
 	this->addChild(textField, 2);
 
 	auto btnJoinRoom = Button::create();
 	btnJoinRoom->setTitleText("Join Room");
+	btnJoinRoom->setTitleFontName("Felt");
 	btnJoinRoom->setTitleFontSize(30);
+	btnJoinRoom->loadTextureNormal("button1.png");
 	btnJoinRoom->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 8 * 3));
 	this->addChild(btnJoinRoom, 2);
 	btnJoinRoom->addTouchEventListener(CC_CALLBACK_2(FindRoomScene::JoinRoom, this));
 
 	auto btnCreateRoom = Button::create();
 	btnCreateRoom->setTitleText("Create Room");
+	btnCreateRoom->setTitleFontName("Felt");
 	btnCreateRoom->setTitleFontSize(30);
+	btnCreateRoom->loadTextureNormal("button1.png");
 	btnCreateRoom->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 8 * 2));
 	this->addChild(btnCreateRoom, 2);
 	btnCreateRoom->addTouchEventListener(CC_CALLBACK_2(FindRoomScene::CreateRoom, this));
 
 	auto btnBack = Button::create();
 	btnBack->setTitleText("Back");
+	btnBack->setTitleFontName("Felt");
 	btnBack->setTitleFontSize(30);
+	btnBack->loadTextureNormal("button1.png");
 	btnBack->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 8));
 	this->addChild(btnBack, 2);
 	btnBack->addTouchEventListener(CC_CALLBACK_2(FindRoomScene::Back, this));

@@ -40,18 +40,18 @@ bool RoomScene::init()
 	visibleHeight = size.height;
 	visibleWidth = size.width;
 
-	textField = TextField::create("", "Arial", 30);
+	textField = TextField::create("", "Felt", 30);
 	textField->setText("waiting...");
 	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 4 * 3));
 	this->addChild(textField, 2);
 
-	textField = TextField::create("", "Arial", 30);
+	textField = TextField::create("", "Felt", 30);
 	textField->setText("VS");
 	textField->setFontSize(50);
 	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 2));
 	this->addChild(textField, 2);
 
-	textField = TextField::create("Player Name", "Arial", 30);
+	textField = TextField::create("Player Name", "Felt", 30);
 	textField->setText(userName2);
 	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 4));
 	this->addChild(textField, 2);
@@ -62,14 +62,18 @@ bool RoomScene::init()
 
 	btnReady = Button::create();
 	btnReady->setTitleText("Ready");
+	btnReady->setTitleFontName("Felt");
 	btnReady->setTitleFontSize(30);
+	btnReady->loadTextureNormal("button1.png");
 	btnReady->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 8 * 2));
 	this->addChild(btnReady, 2);
 	btnReady->addTouchEventListener(CC_CALLBACK_2(RoomScene::Ready, this));
 
 	auto btnBack = Button::create();
 	btnBack->setTitleText("Back");
+	btnBack->setTitleFontName("Felt");
 	btnBack->setTitleFontSize(30);
+	btnBack->loadTextureNormal("button1.png");
 	btnBack->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 8));
 	this->addChild(btnBack, 2);
 	btnBack->addTouchEventListener(CC_CALLBACK_2(RoomScene::Back, this));
