@@ -1,2 +1,2 @@
 # ppz
-Please download classes and resourses
+Please download classes and resources
