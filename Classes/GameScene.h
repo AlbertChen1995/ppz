@@ -1,23 +1,19 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
-#include "FindRoomScene.h"
-#include "RoomScene.h"
-#include "HomeScene.h"
-#include "cocostudio/CocoStudio.h"
-#include "ui/CocosGUI.h"
 
-#include "SimpleAudioEngine.h"
-using namespace CocosDenshion;;
 #include "json/rapidjson.h"
 #include "json/document.h"
 #include "json/writer.h"
 #include "json/stringbuffer.h"
 #include "GameScene.h"
 #include <regex>
-
+#include "SimpleAudioEngine.h"
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"
 #include <vector>
+#include <string>
+using std::vector;
+using std::string;
 USING_NS_CC;
 
 class GameScene : public cocos2d::Layer
@@ -41,7 +37,7 @@ public:
 	void onMouseDown(Event* event);
 	void touchMoved(Event* event);
 	bool played = false;
-	void take_action(int i);
+	void take_action(int n);
 	void animation();
 	Vec2 play1position;
 	Vec2 play2position;
@@ -49,9 +45,14 @@ public:
 	int flag = 0;
 	Sprite* paibei;
 	Sprite* robotpaibei;
-
-	void GameScene::Back(Ref *pSender, Widget::TouchEventType type);
-
+	Sprite* paimian;
+	Sprite* robotpaimian;
+	void remove_paibei(float dt);
+	void remove_paimian(float dt);
+	int qi = 0;
+	int robot_qi = 0;
+	bool ismove = true;
+	int robot_type = 0;
 };
 
 #endif //

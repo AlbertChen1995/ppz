@@ -4,17 +4,23 @@
 #include "SimpleAudioEngine.h"
 #include <vector>
 #include "AI.h"
+#include "json/rapidjson.h"
+#include "json/document.h"
+#include "json/writer.h"
+#include "json/stringbuffer.h"
+#include "GameScene.h"
+#include <regex>
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
 using namespace cocostudio::timeline;
 
-
 string userName3;
-Scene* GameScene::createScene(string name)
+Scene* GameScene::createScene(string str)
 {
 
-	userName3 = name;
+	userName3 = str;
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
@@ -42,21 +48,14 @@ bool GameScene::init()
 	CreateCard();
 	playcard();
 	return true;
-
-	auto btnBack = Button::create();
-	btnBack->setTitleText("Back");
-	btnBack->setTitleFontSize(30);
-	btnBack->setPosition(Size(100,500));
-	this->addChild(btnBack, 3);
-	btnBack->addTouchEventListener(CC_CALLBACK_2(GameScene::Back, this));
 }
 
 void GameScene::CreateCard() {
-	Sprite* card1 = Sprite::create("qi1.png");//qi
+	Sprite* card1 = Sprite::create("qi.png");
 	card1->setPosition(Vec2(origin.x + visibleSize.width/2 - card1->getContentSize().width,origin.y + card1->getContentSize().height/2));
-	Sprite* card2 = Sprite::create("bo1.png");//bo
+	Sprite* card2 = Sprite::create("bo.png");
 	card2->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + card2->getContentSize().height/2));
-	Sprite* card3 = Sprite::create("dang1.png");//dang
+	Sprite* card3 = Sprite::create("dang.png");
 	card3->setPosition(Vec2(origin.x + visibleSize.width / 2 + card3->getContentSize().width, origin.y + card3->getContentSize().height/2));
 	Sprite* robotCard1 = Sprite::create("paibei.png");
 	robotCard1->setPosition(Vec2(visibleSize.width / 2 - robotCard1->getContentSize().width, visibleSize.height - robotCard1->getContentSize().height / 2));
@@ -81,7 +80,6 @@ void GameScene::CreateCard() {
 void GameScene::playcard() {
 	if (flag != 0) {
 		flag = 0;
-		played = !played;
 	}
 	addMouseListener();
 }
@@ -112,23 +110,38 @@ void GameScene::onMouseDown(Event* event) {
 	//log("%f,%f", cards[3]->getPosition().x, cards[3]->getPosition().y);
 	int cards_size = cards.size();
 	for (int i = 0; i < cards_size; i++) {
-		if ((mouseposition.x > cards[i]->getPosition().x - cards[i]->getContentSize().width / 2) && (mouseposition.x < cards[i]->getPosition().x + cards[i]->getContentSize().width / 2)
-			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)
-			&& (!played)) 
+		if ((!played) &&(mouseposition.x > cards[i]->getPosition().x - cards[i]->getContentSize().width / 2) && (mouseposition.x < cards[i]->getPosition().x + cards[i]->getContentSize().width / 2)
+			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)) 
 		{
-			played = !played;
-			flag = type[i];
-			take_action(type[i]);
+				played = true;
+				flag = type[i];
+				take_action(type[i]);
 		}			
 	}
 
 }
 
-void GameScene::take_action(int i) {
-	if (i = 1) {
-		//jiqi
+void GameScene::take_action(int n) {
+	robot_type = normal(qi, robot_qi);
+	//CCLOG("%d", robot_type);
+	//CCLOG("%d", robot_type);
+	if (robot_type == 1) {
+		robot_qi++;
 	}
-	else if (i = 2) {
+	if (robot_type == 2) {
+		robot_qi--;
+	}
+	ismove = true;
+	if (n == 1) {
+		qi++;
+	}
+	else if (n == 2) {
+		if (qi == 0) {
+			ismove = false;
+		}
+		else {
+			qi--;
+		}
 		//panduan bo
 	}
 	else {
@@ -138,44 +151,88 @@ void GameScene::take_action(int i) {
 }
 
 void GameScene::animation() {
-	paibei = Sprite::create("paibei.png");
-	robotpaibei = Sprite::create("paibei.png");
-	paibei->setPosition(Vec2(origin.x + visibleSize.width / 2 + 2*paibei->getContentSize().width, origin.y + paibei->getContentSize().height));
-	this->addChild(paibei, 2);
-	robotpaibei->setPosition(Vec2(origin.x + visibleSize.width / 2 - 2 * paibei->getContentSize().width, visibleSize.height - robotpaibei->getContentSize().height / 2));
-	this->addChild(robotpaibei, 2);
-	play1position.x = visibleSize.width / 2;
-	play1position.y = visibleSize.height / 2 - paibei->getContentSize().height/2;
-	play2position.x = visibleSize.width / 2;
-	play2position.y = visibleSize.height / 2 + robotpaibei->getContentSize().height / 2;
-	//log("%f,%f", play1position.x, play1position.y);
-	auto move = MoveTo::create(1, play1position);
-	auto robot_move = MoveTo::create(1, play2position);
-	paibei->runAction(move);
-	robotpaibei->runAction(robot_move);
-	vs_robot();
+	if (ismove) {
+		paibei = Sprite::create("paibei.png");
+		robotpaibei = Sprite::create("paibei.png");
+		paibei->setPosition(Vec2(origin.x + visibleSize.width / 2 + 2 * paibei->getContentSize().width, origin.y + paibei->getContentSize().height));
+		this->addChild(paibei, 2);
+		robotpaibei->setPosition(Vec2(origin.x + visibleSize.width / 2 - 2 * paibei->getContentSize().width, visibleSize.height - robotpaibei->getContentSize().height / 2));
+		this->addChild(robotpaibei, 2);
+		play1position.x = visibleSize.width / 2;
+		play1position.y = visibleSize.height / 2 - paibei->getContentSize().height / 2;
+		play2position.x = visibleSize.width / 2;
+		play2position.y = visibleSize.height / 2 + robotpaibei->getContentSize().height / 2;
+		//log("%f,%f", play1position.x, play1position.y);
+		auto move = MoveTo::create(1, play1position);
+		auto robot_move = MoveTo::create(1, play2position);
+		paibei->runAction(move);
+		robotpaibei->runAction(robot_move);
+		vs_robot();
+	}
+	else {
+		log("qi bu zu");
+		played = false;
+		playcard();
+	}
 }
 
 void GameScene::vs_robot() {
-	int robot = normal();
+	scheduleOnce(schedule_selector(GameScene::remove_paibei), 1.5f);
 	//this->removeChild(paibei);
 	//this->removeChild(robotpaibei);
 	if (flag == 0) {
-		return;
+		//log("you lose!!hsfdkjhsdhkjhsdh!");
+		//return;
 	}
 	else {
-		if (flag == 1 && robot == 2)
+		if (flag == 1) {
+			paimian = Sprite::create("qi.png");
+		}
+		if (flag == 2) {
+			paimian = Sprite::create("bo.png");
+		}
+		if (flag == 3) {
+			paimian = Sprite::create("dang.png");
+		}
+		paimian->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - paimian->getContentSize().height / 2));
+		paimian->setVisible(false);
+		this->addChild(paimian, 2);
+		if (robot_type == 1) {
+			robotpaimian = Sprite::create("qi.png");
+		}
+		if (robot_type == 2) {
+			robotpaimian = Sprite::create("bo.png");
+		}
+		if (robot_type == 3) {
+			robotpaimian = Sprite::create("dang.png");
+		}
+		robotpaimian->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + robotpaimian->getContentSize().height / 2));
+		robotpaimian->setVisible(false);
+		this->addChild(robotpaimian, 2);
+		if (flag == 1 && robot_type == 2)
 			log("you lose!!!");
-		else if (flag == 2 && robot == 1)
+		else if (flag == 2 && robot_type == 1)
 			log("you win!!!");
 		else playcard();
 	}
 }
 
-void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {
-	if (type == Widget::TouchEventType::ENDED) {
-		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
-		auto scene = HomeScene::createScene(userName3);
-		Director::getInstance()->replaceScene(scene);
-	}
+void GameScene::remove_paibei(float dt) {
+	paimian->setVisible(true);
+	robotpaimian->setVisible(true);
+	//paimian->setPosition(paibei->getPosition());
+	this->removeChild(paibei);
+	//this->addChild(paimian,2);
+	//robotpaimian->setPosition(robotpaibei->getPosition());
+	this->removeChild(robotpaibei);
+	//this->addChild(robotpaimian, 2);
+	scheduleOnce(schedule_selector(GameScene::remove_paimian), 0.5f);
+
+	if (flag == 3 || flag == 0)
+	played = false;
+}
+
+void GameScene::remove_paimian(float dt) {
+	this->removeChild(paimian);
+	this->removeChild(robotpaimian);
 }
