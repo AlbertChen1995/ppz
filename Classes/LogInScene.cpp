@@ -76,9 +76,16 @@ bool LogInScene::init()
 	LoginScreen->setPosition(ccp(400, 330));
 	this->addChild(LoginScreen);
 
-	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("LogIn.mp3");
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("LogIn.mp3"); 
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("LogIn.mp3", true);
 	SimpleAudioEngine::getInstance()->preloadEffect("Click.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("defeat.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("victory.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("cannot.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("bigboom.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("dead.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("win.mp3");
+	SimpleAudioEngine::getInstance()->preloadEffect("lose.mp3");
 
 //	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.

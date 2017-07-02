@@ -46,6 +46,10 @@ bool GameScene::init()
 	robot_touxiang = Sprite::create("touxiang.png");
 	robot_touxiang->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width / 2, visibleSize.height - touxiang->getContentSize().height / 2));
 	this->addChild(robot_touxiang, 2);
+	time = TextField::create("9", "Felt", 50);
+	time->setPosition(Vec2(20, visibleSize.height-20));
+	this->addChild(time, 2);
+	schedule(schedule_selector(GameScene::setTime), 1.0f, kRepeatForever, 0);
 	create_qicao();
 	CreateCard();
 	playcard();
@@ -119,8 +123,10 @@ void GameScene::onMouseDown(Event* event) {
 		if ((!played) &&(mouseposition.x > cards[i]->getPosition().x - cards[i]->getContentSize().width / 2) && (mouseposition.x < cards[i]->getPosition().x + cards[i]->getContentSize().width / 2)
 			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)) 
 		{
+				SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 				played = true;
 				can_click = false;
+				setTime(9.0);
 				flag = type[i];
 				take_action(type[i]);
 		}			
@@ -220,6 +226,7 @@ void GameScene::animation() {
 	}
 	else {
 		log("qi bu zu");
+		SimpleAudioEngine::getInstance()->playEffect("cannot.wav");
 		played = false;
 		can_click = true;
 		playcard();
@@ -261,10 +268,12 @@ void GameScene::vs_robot() {
 		this->addChild(robotpaimian, 2);
 		if (flag == 1 && robot_type == 2) {
 			log("you lose!!!");
+			dtime = -1;
 			scheduleOnce(schedule_selector(GameScene::lose), 1.5f);
 		}
 		else if (flag == 2 && robot_type == 1) {
 			log("you win!!!");
+			dtime = -1;
 			scheduleOnce(schedule_selector(GameScene::win), 1.5f);
 		}
 		else {
@@ -277,6 +286,9 @@ void GameScene::vs_robot() {
 void GameScene::remove_paibei(float dt) {
 	paimian->setVisible(true);
 	robotpaimian->setVisible(true);
+
+	SimpleAudioEngine::getInstance()->playEffect("bigboom.wav");
+
 	//paimian->setPosition(paibei->getPosition());
 	this->removeChild(paibei);
 	//this->addChild(paimian,2);
@@ -356,6 +368,7 @@ void GameScene::win(float dt) {
 	this->addChild(winner, 2);
 	SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 	SimpleAudioEngine::getInstance()->playEffect("win.mp3");
+	SimpleAudioEngine::getInstance()->playEffect("victory.wav");
 }
 
 void GameScene::lose(float dt) {
@@ -364,6 +377,8 @@ void GameScene::lose(float dt) {
 	this->addChild(loser, 2);
 	SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 	SimpleAudioEngine::getInstance()->playEffect("lose.mp3");
+	SimpleAudioEngine::getInstance()->playEffect("defeat.wav");
+	SimpleAudioEngine::getInstance()->playEffect("dead.wav");
 }
 
 void GameScene::addUI() {
@@ -394,4 +409,23 @@ void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {
 		auto scene = HomeScene::createScene(userName3);
 		Director::getInstance()->replaceScene(scene);
 	}
+}
+
+void GameScene::setTime(float dt) {
+	if (dtime > 0) {
+		dtime--;
+		if (dt == 9.0)
+			dtime = 9;
+		char s[4];
+		sprintf(s, "%d", dtime);
+		time->setString(s);
+	}
+	else if (dtime == 0) {
+		dtime = 9;
+		played = true;
+		can_click = false;
+		flag = 1;
+		take_action(1);
+	}
+	else return;
 }

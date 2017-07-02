@@ -62,6 +62,7 @@ public:
 	Sprite* robot_touxiang;
 	void remove_paibei(float dt);
 	void remove_paimian(float dt);
+	void setTime(float dt);
 	void win(float dt);
 	void lose(float dt);
 	int qi = 0;
@@ -69,6 +70,8 @@ public:
 	bool ismove = true;
 	int robot_type = 0;
 	bool can_click = true;
+	TextField* time;
+	int dtime = 9;
 
 	void GameScene::Back(Ref *pSender, Widget::TouchEventType type);
 	void GameScene::addUI();

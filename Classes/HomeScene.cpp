@@ -51,6 +51,8 @@ Scene* HomeScene::createScene(string userName_)
 // on "init" you need to initialize your instance
 bool HomeScene::init()
 {
+	SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+
 	Size size = Director::getInstance()->getVisibleSize();
 	visibleHeight = size.height;
 	visibleWidth = size.width;
