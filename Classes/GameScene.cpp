@@ -4,23 +4,14 @@
 #include "SimpleAudioEngine.h"
 #include <vector>
 #include "AI.h"
-#include "json/rapidjson.h"
-#include "json/document.h"
-#include "json/writer.h"
-#include "json/stringbuffer.h"
-#include "GameScene.h"
-#include <regex>
-#include "SimpleAudioEngine.h"
-#include "HomeScene.h"
-
-USING_NS_CC;
 using namespace CocosDenshion;
+USING_NS_CC;
+
 using namespace cocostudio::timeline;
 
 string userName3;
 Scene* GameScene::createScene(string str)
 {
-
 	userName3 = str;
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
@@ -43,13 +34,21 @@ bool GameScene::init()
 	{
 		return false;
 	}
+
+	addUI();
+
 	addMouseListener();
 	visibleSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
+	touxiang = Sprite::create("touxiang.png");
+	touxiang->setPosition(Vec2(origin.x + touxiang->getContentSize().width / 2, origin.y + touxiang->getContentSize().height / 2));
+	this->addChild(touxiang, 2);
+	robot_touxiang = Sprite::create("touxiang.png");
+	robot_touxiang->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width / 2, visibleSize.height - touxiang->getContentSize().height / 2));
+	this->addChild(robot_touxiang, 2);
+	create_qicao();
 	CreateCard();
 	playcard();
-
-	addUI();
 
 	return true;
 }
@@ -104,6 +103,9 @@ void GameScene::addMouseListener() {
 }
 
 void GameScene::onMouseDown(Event* event) {
+	if (!can_click) {
+		return;
+	}
 	EventMouse* mouse = (EventMouse*)event;
 	Point mouseposition = mouse->getLocation();
 	//float x1 = cards[2]->getPosition().x;
@@ -118,6 +120,7 @@ void GameScene::onMouseDown(Event* event) {
 			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)) 
 		{
 				played = true;
+				can_click = false;
 				flag = type[i];
 				take_action(type[i]);
 		}			
@@ -130,14 +133,43 @@ void GameScene::take_action(int n) {
 	//CCLOG("%d", robot_type);
 	//CCLOG("%d", robot_type);
 	if (robot_type == 1) {
+		if (robot_qi < 3)
 		robot_qi++;
+		switch (robot_qi)
+		{
+		case 3:
+			r_qi3->setVisible(true);
+		case 2:
+			r_qi2->setVisible(true);
+		case 1:
+			r_qi1->setVisible(true);
+		}
 	}
 	if (robot_type == 2) {
 		robot_qi--;
+		switch (robot_qi)
+		{
+		case 0:
+			r_qi1->setVisible(false);
+		case 1:
+			r_qi2->setVisible(false);
+		case 2:
+			r_qi3->setVisible(false);
+		}
 	}
 	ismove = true;
 	if (n == 1) {
+		if (qi < 3)
 		qi++;
+		switch (qi)
+		{
+		case 3:
+			_qi3->setVisible(true);
+		case 2:
+			_qi2->setVisible(true);
+		case 1:
+			_qi1->setVisible(true);
+		}
 	}
 	else if (n == 2) {
 		if (qi == 0) {
@@ -145,6 +177,15 @@ void GameScene::take_action(int n) {
 		}
 		else {
 			qi--;
+			switch (qi)
+			{
+			case 0:
+				_qi1->setVisible(false);
+			case 1:
+				_qi2->setVisible(false);
+			case 2:
+				_qi3->setVisible(false);
+			}
 		}
 		//panduan bo
 	}
@@ -167,21 +208,26 @@ void GameScene::animation() {
 		play2position.x = visibleSize.width / 2;
 		play2position.y = visibleSize.height / 2 + robotpaibei->getContentSize().height / 2;
 		//log("%f,%f", play1position.x, play1position.y);
-		auto move = MoveTo::create(1, play1position);
-		auto robot_move = MoveTo::create(1, play2position);
-		paibei->runAction(move);
-		robotpaibei->runAction(robot_move);
+		auto fade_out1 = FadeOut::create(1.0f);
+		auto fade_out2 = FadeOut::create(1.0f);
+		auto move = MoveTo::create(1.0f, play1position);
+		auto spwan = Spawn::createWithTwoActions(fade_out1, move);
+		auto robot_move = MoveTo::create(1.0f, play2position);
+		auto robot_spwan = Spawn::createWithTwoActions(fade_out2, robot_move);
+		paibei->runAction(spwan);
+		robotpaibei->runAction(robot_spwan);
 		vs_robot();
 	}
 	else {
 		log("qi bu zu");
 		played = false;
+		can_click = true;
 		playcard();
 	}
 }
 
 void GameScene::vs_robot() {
-	scheduleOnce(schedule_selector(GameScene::remove_paibei), 1.5f);
+	scheduleOnce(schedule_selector(GameScene::remove_paibei), 1.0f);
 	//this->removeChild(paibei);
 	//this->removeChild(robotpaibei);
 	if (flag == 0) {
@@ -213,11 +259,18 @@ void GameScene::vs_robot() {
 		robotpaimian->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + robotpaimian->getContentSize().height / 2));
 		robotpaimian->setVisible(false);
 		this->addChild(robotpaimian, 2);
-		if (flag == 1 && robot_type == 2)
+		if (flag == 1 && robot_type == 2) {
 			log("you lose!!!");
-		else if (flag == 2 && robot_type == 1)
+			scheduleOnce(schedule_selector(GameScene::lose), 1.5f);
+		}
+		else if (flag == 2 && robot_type == 1) {
 			log("you win!!!");
-		else playcard();
+			scheduleOnce(schedule_selector(GameScene::win), 1.5f);
+		}
+		else {
+			//scheduleOnce(schedule_selector(GameScene::next_play), 1.2f);
+			playcard();
+		}
 	}
 }
 
@@ -239,6 +292,78 @@ void GameScene::remove_paibei(float dt) {
 void GameScene::remove_paimian(float dt) {
 	this->removeChild(paimian);
 	this->removeChild(robotpaimian);
+	can_click = true;
+}
+
+//void GameScene::next_play(float dt) {
+//	playcard();
+//}
+
+
+void GameScene::create_qicao() {
+	Sprite* qi_cao1 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	qi_cao1->setPosition(Vec2(touxiang->getContentSize().width+qi_cao1->getContentSize().width/2, qi_cao1->getContentSize().height / 2));
+	this->addChild(qi_cao1, 2);
+	Sprite* qi_cao2 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	qi_cao2->setPosition(Vec2(touxiang->getContentSize().width + qi_cao2->getContentSize().width / 2*3, qi_cao2->getContentSize().height / 2));
+	this->addChild(qi_cao2, 2);
+	Sprite* qi_cao3 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	qi_cao3->setPosition(Vec2(touxiang->getContentSize().width + qi_cao3->getContentSize().width / 2*5, qi_cao3->getContentSize().height / 2));
+	this->addChild(qi_cao3, 2);
+	//Sprite* qi_cao2 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	//Sprite* qi_cao3 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	_qi1 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	_qi1->setPosition(Vec2(touxiang->getContentSize().width + qi_cao1->getContentSize().width / 2, qi_cao1->getContentSize().height / 2));
+	this->addChild(_qi1, 3);
+	_qi1->setVisible(false);
+	_qi2 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	_qi2->setPosition(Vec2(touxiang->getContentSize().width + qi_cao1->getContentSize().width / 2*3, qi_cao1->getContentSize().height / 2));
+	this->addChild(_qi2, 3);
+	_qi2->setVisible(false);
+	_qi3 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	_qi3->setPosition(Vec2(touxiang->getContentSize().width + qi_cao1->getContentSize().width / 2*5, qi_cao1->getContentSize().height / 2));
+	this->addChild(_qi3, 3);
+	_qi3->setVisible(false);
+
+	//robot
+	Sprite* r_qi_cao1 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	r_qi_cao1->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi_cao1, 2);
+	Sprite* r_qi_cao2 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	r_qi_cao2->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2*3, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi_cao2, 2);
+	Sprite* r_qi_cao3 = Sprite::create("qi_cao.jpg", Rect(10, 25, 67, 19));
+	r_qi_cao3->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2*5, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi_cao3, 2);
+	r_qi1 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	r_qi1->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi1, 3);
+	r_qi1->setVisible(false);
+	r_qi2 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	r_qi2->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2*3, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi2, 3);
+	r_qi2->setVisible(false);
+	r_qi3 = Sprite::create("qi_cao.jpg", Rect(10, 2, 59, 13));
+	r_qi3->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width - r_qi_cao1->getContentSize().width / 2*5, visibleSize.height + r_qi_cao1->getContentSize().height / 2 - touxiang->getContentSize().height));
+	this->addChild(r_qi3, 3);
+	r_qi3->setVisible(false);
+}
+
+
+void GameScene::win(float dt) {
+	Sprite* winner = Sprite::create("victory.png");
+	winner->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(winner, 2);
+	SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	SimpleAudioEngine::getInstance()->playEffect("win.mp3");
+}
+
+void GameScene::lose(float dt) {
+	Sprite* loser = Sprite::create("lose.png");
+	loser->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
+	this->addChild(loser, 2);
+	SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	SimpleAudioEngine::getInstance()->playEffect("lose.mp3");
 }
 
 void GameScene::addUI() {
@@ -258,12 +383,9 @@ void GameScene::addUI() {
 
 	auto textField = TextField::create("Player Name", "Felt", 30);
 	textField->setText(userName3);
-	textField->setPosition(ccp(150, 150));
+	textField->setPosition(ccp(150, 100));
 	this->addChild(textField, 2);
 
-	CCSprite * sprite = CCSprite::create("touxiang.png");
-	sprite->setPosition(ccp(150, 200));
-	this->addChild(sprite, 2);
 }
 
 void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {

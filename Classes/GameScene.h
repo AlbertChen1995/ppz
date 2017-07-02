@@ -39,6 +39,8 @@ public:
 	void addMouseListener();
 	void onMouseDown(Event* event);
 	void touchMoved(Event* event);
+	void create_qicao();
+	void create_qi();
 	bool played = false;
 	void take_action(int n);
 	void animation();
@@ -48,14 +50,25 @@ public:
 	int flag = 0;
 	Sprite* paibei;
 	Sprite* robotpaibei;
+	Sprite* _qi1;
+	Sprite* _qi2;
+	Sprite* _qi3;
+	Sprite* r_qi1;
+	Sprite* r_qi2;
+	Sprite* r_qi3;
 	Sprite* paimian;
 	Sprite* robotpaimian;
+	Sprite* touxiang;
+	Sprite* robot_touxiang;
 	void remove_paibei(float dt);
 	void remove_paimian(float dt);
+	void win(float dt);
+	void lose(float dt);
 	int qi = 0;
 	int robot_qi = 0;
 	bool ismove = true;
 	int robot_type = 0;
+	bool can_click = true;
 
 	void GameScene::Back(Ref *pSender, Widget::TouchEventType type);
 	void GameScene::addUI();
