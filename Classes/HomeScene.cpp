@@ -11,6 +11,8 @@ USING_NS_CC;
 #include "json/stringbuffer.h"
 #include "GameScene.h"
 #include <regex>
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
 using std::to_string;
 using std::regex;
 using std::match_results;
@@ -170,6 +172,7 @@ bool HomeScene::init()
 }
 void HomeScene::JoinRoom(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = FindRoomScene::createScene(userName);
 		Director::getInstance()->replaceScene(scene);
 	}
@@ -177,6 +180,7 @@ void HomeScene::JoinRoom(Ref *pSender, Widget::TouchEventType type) {
 
 void HomeScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = RoomScene::createScene(userName);
 		Director::getInstance()->replaceScene(scene);
 	}
@@ -184,21 +188,24 @@ void HomeScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
 
 void HomeScene::Simple(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
-		auto scene = GameScene::createScene();
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+		auto scene = GameScene::createScene(userName);
 		Director::getInstance()->replaceScene(scene);
 	}
 }
 
 void HomeScene::Normal(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
-		auto scene = GameScene::createScene();
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+		auto scene = GameScene::createScene(userName);
 		Director::getInstance()->replaceScene(scene);
 	}
 }
 
 void HomeScene::Hard(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
-		auto scene = GameScene::createScene();
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+		auto scene = GameScene::createScene(userName);
 		Director::getInstance()->replaceScene(scene);
 	}
 }

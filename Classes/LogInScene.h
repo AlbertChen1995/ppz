@@ -5,6 +5,7 @@
 #include "network/HttpClient.h"
 #include <string>
 #include <vector>
+#include "SimpleAudioEngine.h"
 using std::vector;
 using std::string;
 using namespace cocos2d::ui;
@@ -29,6 +30,7 @@ private:
 	float visibleWidth;
 	TextField * textField;
 	TextField * textBox;
+	void LogInScene::preloadMusic();
 };
 
 #endif // __HELLOWORLD_SCENE_H__

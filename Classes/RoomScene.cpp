@@ -11,6 +11,8 @@ USING_NS_CC;
 #include "json/stringbuffer.h"
 #include "GameScene.h"
 #include <regex>
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
 
 using namespace cocostudio::timeline;
 
@@ -56,7 +58,7 @@ bool RoomScene::init()
 
 	CCSprite * sprite = CCSprite::create("touxiang.png");
 	sprite->setPosition(ccp(490, 220));
-	this->addChild(sprite);
+	this->addChild(sprite,2);
 
 	btnReady = Button::create();
 	btnReady->setTitleText("Ready");
@@ -147,6 +149,7 @@ bool RoomScene::init()
 
 void RoomScene::Back(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = FindRoomScene::createScene(userName2);
 		Director::getInstance()->replaceScene(scene);
 	}
@@ -154,6 +157,7 @@ void RoomScene::Back(Ref *pSender, Widget::TouchEventType type) {
 
 void RoomScene::Ready(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		if (btnReady->getTitleText() == "Ready")
 			btnReady->setTitleText("Cancel");
 		else btnReady->setTitleText("Ready");

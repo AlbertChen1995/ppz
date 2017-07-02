@@ -11,6 +11,8 @@ USING_NS_CC;
 #include "json/stringbuffer.h"
 #include "GameScene.h"
 #include <regex>
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
 
 using namespace cocostudio::timeline;
 
@@ -138,6 +140,7 @@ bool FindRoomScene::init()
 
 void FindRoomScene::JoinRoom(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = RoomScene::createScene(userName1);
 		Director::getInstance()->replaceScene(scene);
 	}
@@ -145,6 +148,7 @@ void FindRoomScene::JoinRoom(Ref *pSender, Widget::TouchEventType type) {
 
 void FindRoomScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = RoomScene::createScene(userName1);
 		Director::getInstance()->replaceScene(scene);
 	}
@@ -152,6 +156,7 @@ void FindRoomScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
 
 void FindRoomScene::Back(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = HomeScene::createScene(userName1);
 		Director::getInstance()->replaceScene(scene);
 	}

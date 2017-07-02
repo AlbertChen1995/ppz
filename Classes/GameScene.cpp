@@ -9,8 +9,12 @@ USING_NS_CC;
 
 using namespace cocostudio::timeline;
 
-Scene* GameScene::createScene()
+
+string userName3;
+Scene* GameScene::createScene(string name)
 {
+
+	userName3 = name;
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
@@ -38,14 +42,21 @@ bool GameScene::init()
 	CreateCard();
 	playcard();
 	return true;
+
+	auto btnBack = Button::create();
+	btnBack->setTitleText("Back");
+	btnBack->setTitleFontSize(30);
+	btnBack->setPosition(Size(100,500));
+	this->addChild(btnBack, 3);
+	btnBack->addTouchEventListener(CC_CALLBACK_2(GameScene::Back, this));
 }
 
 void GameScene::CreateCard() {
-	Sprite* card1 = Sprite::create("qi.png");
+	Sprite* card1 = Sprite::create("qi1.png");//qi
 	card1->setPosition(Vec2(origin.x + visibleSize.width/2 - card1->getContentSize().width,origin.y + card1->getContentSize().height/2));
-	Sprite* card2 = Sprite::create("bo.png");
+	Sprite* card2 = Sprite::create("bo1.png");//bo
 	card2->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + card2->getContentSize().height/2));
-	Sprite* card3 = Sprite::create("dang.png");
+	Sprite* card3 = Sprite::create("dang1.png");//dang
 	card3->setPosition(Vec2(origin.x + visibleSize.width / 2 + card3->getContentSize().width, origin.y + card3->getContentSize().height/2));
 	Sprite* robotCard1 = Sprite::create("paibei.png");
 	robotCard1->setPosition(Vec2(visibleSize.width / 2 - robotCard1->getContentSize().width, visibleSize.height - robotCard1->getContentSize().height / 2));
@@ -158,5 +169,13 @@ void GameScene::vs_robot() {
 		else if (flag == 2 && robot == 1)
 			log("you win!!!");
 		else playcard();
+	}
+}
+
+void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {
+	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+		auto scene = HomeScene::createScene(userName3);
+		Director::getInstance()->replaceScene(scene);
 	}
 }

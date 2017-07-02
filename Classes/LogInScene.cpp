@@ -4,6 +4,7 @@
 #include "ui/CocosGUI.h"
 
 USING_NS_CC;
+#include "SimpleAudioEngine.h"
 #include "json/rapidjson.h"
 #include "json/document.h"
 #include "json/writer.h"
@@ -16,6 +17,7 @@ using std::match_results;
 using std::regex_match;
 using std::cmatch;
 using namespace rapidjson;
+using namespace CocosDenshion;
 
 
 using namespace cocostudio::timeline;
@@ -66,6 +68,11 @@ bool LogInScene::init()
 	LoginScreen->setScale(0.6, 0.6);
 	LoginScreen->setPosition(ccp(400, 330));
 	this->addChild(LoginScreen);
+
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("LogIn.mp3");
+	SimpleAudioEngine::getInstance()->playBackgroundMusic("LogIn.mp3", true);
+	SimpleAudioEngine::getInstance()->preloadEffect("Click.wav");
+
 //	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.
 	// 1. super init first
@@ -135,6 +142,7 @@ bool LogInScene::init()
 }
 void LogInScene::login(Ref *pSender, Widget::TouchEventType type) {
 	if (type == Widget::TouchEventType::ENDED) {
+		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
 		auto scene = HomeScene::createScene(textField->getString());
 		Director::getInstance()->replaceScene(scene);
 			/*auto request = new HttpRequest();
