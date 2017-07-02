@@ -51,15 +51,22 @@ bool LogInScene::init()
 	visibleHeight = size.height;
 	visibleWidth = size.width;
 
-	textField = TextField::create("Player Name", "Arial", 30);
-	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 4 * 3));
+	textField = TextField::create("Player Name", "Felt", 50);
+	textField->setPosition(Size(visibleWidth / 2, visibleHeight / 2));
 	this->addChild(textField, 2);
 
+	CCSprite * Logo = CCSprite::create("Logo.png");
+	//Logo->setScale(0.6, 0.6);
+	Logo->setPosition(ccp(visibleWidth / 2, visibleHeight / 1.5));
+	Logo->setScale(1.2, 1.2);
+	this->addChild(Logo, 2);
 
 	auto button = Button::create();
-	button->setTitleText("Login");
+	//button->setTitleText("Login");
+	button->setTitleFontName("Felt");
+	button->loadTextureNormal("StartGame.png");
 	button->setTitleFontSize(30);
-	button->setPosition(Size(visibleWidth / 2, visibleHeight / 2));
+	button->setPosition(Size(visibleWidth / 2, visibleHeight / 4));
 	this->addChild(button, 2);
 
 	button->addTouchEventListener(CC_CALLBACK_2(LogInScene::login, this));
@@ -72,6 +79,8 @@ bool LogInScene::init()
 	SimpleAudioEngine::getInstance()->preloadBackgroundMusic("LogIn.mp3");
 	SimpleAudioEngine::getInstance()->playBackgroundMusic("LogIn.mp3", true);
 	SimpleAudioEngine::getInstance()->preloadEffect("Click.wav");
+	SimpleAudioEngine::getInstance()->preloadEffect("win.mp3");
+	SimpleAudioEngine::getInstance()->preloadEffect("lose.mp3");
 
 //	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.

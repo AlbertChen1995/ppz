@@ -51,11 +51,13 @@ Scene* HomeScene::createScene(string userName_)
 // on "init" you need to initialize your instance
 bool HomeScene::init()
 {
+	SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+
 	Size size = Director::getInstance()->getVisibleSize();
 	visibleHeight = size.height;
 	visibleWidth = size.width;
 
-	textField = TextField::create("Player Name", "Arial", 30);
+	textField = TextField::create("Player Name", "Felt", 30);
 	textField->setText(userName);
 	textField->setPosition(Size(visibleWidth / 8, visibleHeight / 8 * 7));
 	this->addChild(textField, 2);
@@ -71,35 +73,45 @@ bool HomeScene::init()
 
 	auto btnJoinRoom = Button::create();
 	btnJoinRoom->setTitleText("Join Room");
+	btnJoinRoom->setTitleFontName("Felt");
 	btnJoinRoom->setTitleFontSize(30);
+	btnJoinRoom->loadTextureNormal("button1.png");
 	btnJoinRoom->setPosition(Size(visibleWidth / 4, visibleHeight * 2 / 3));
 	this->addChild(btnJoinRoom, 2);
 	btnJoinRoom->addTouchEventListener(CC_CALLBACK_2(HomeScene::JoinRoom, this));
 
 	auto btnCreateRoom = Button::create();
 	btnCreateRoom->setTitleText("Create Room");
+	btnCreateRoom->setTitleFontName("Felt");
 	btnCreateRoom->setTitleFontSize(30);
+	btnCreateRoom->loadTextureNormal("button1.png");
 	btnCreateRoom->setPosition(Size(visibleWidth / 4, visibleHeight / 3));
 	this->addChild(btnCreateRoom, 2);
 	btnCreateRoom->addTouchEventListener(CC_CALLBACK_2(HomeScene::CreateRoom, this));
 
-	auto btnSimple = Button::create();
-	btnSimple->setTitleText("Simple");
-	btnSimple->setTitleFontSize(30);
-	btnSimple->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4));
-	this->addChild(btnSimple, 2);
-	btnSimple->addTouchEventListener(CC_CALLBACK_2(HomeScene::Simple, this));
+	auto btnEasy = Button::create();
+	btnEasy->setTitleText("Easy");
+	btnEasy->setTitleFontName("Felt");
+	btnEasy->setTitleFontSize(30);
+	btnEasy->loadTextureNormal("button1.png");
+	btnEasy->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4));
+	this->addChild(btnEasy, 2);
+	btnEasy->addTouchEventListener(CC_CALLBACK_2(HomeScene::Simple, this));
 
 	auto btnNormal = Button::create();
 	btnNormal ->setTitleText("Normal");
+	btnNormal->setTitleFontName("Felt");
 	btnNormal->setTitleFontSize(30);
+	btnNormal->loadTextureNormal("button1.png");
 	btnNormal->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 2));
 	this->addChild(btnNormal, 2);
 	btnNormal->addTouchEventListener(CC_CALLBACK_2(HomeScene::Normal, this));
 
 	auto btnHard = Button::create();
 	btnHard->setTitleText("Hard");
+	btnHard->setTitleFontName("Felt");
 	btnHard->setTitleFontSize(30);
+	btnHard->loadTextureNormal("button1.png");
 	btnHard->setPosition(Size(visibleWidth / 4 * 3, visibleHeight / 4 * 3));
 	this->addChild(btnHard, 2);
 	btnHard->addTouchEventListener(CC_CALLBACK_2(HomeScene::Hard, this));
