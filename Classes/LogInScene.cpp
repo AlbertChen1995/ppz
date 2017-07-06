@@ -102,7 +102,7 @@ bool LogInScene::init()
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
-
+	//
 	// add a "close" icon to exit the progress. it's an autorelease object
 	auto closeItem = MenuItemImage::create(
 	"CloseNormal.png",

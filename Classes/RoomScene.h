@@ -34,4 +34,4 @@ private:
 	Button * btnReady;
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif

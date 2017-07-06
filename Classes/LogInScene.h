@@ -33,6 +33,6 @@ private:
 	void LogInScene::preloadMusic();
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif
 
 
