@@ -72,7 +72,7 @@ bool HomeScene::init()
 	this->addChild(sprite);
 
 	auto btnJoinRoom = Button::create();
-	btnJoinRoom->setTitleText("Join Room");
+	btnJoinRoom->setTitleText("Join");
 	btnJoinRoom->setTitleFontName("Felt");
 	btnJoinRoom->setTitleFontSize(30);
 	btnJoinRoom->loadTextureNormal("button1.png");
@@ -81,7 +81,7 @@ bool HomeScene::init()
 	btnJoinRoom->addTouchEventListener(CC_CALLBACK_2(HomeScene::JoinRoom, this));
 
 	auto btnCreateRoom = Button::create();
-	btnCreateRoom->setTitleText("Create Room");
+	btnCreateRoom->setTitleText("Create");
 	btnCreateRoom->setTitleFontName("Felt");
 	btnCreateRoom->setTitleFontSize(30);
 	btnCreateRoom->loadTextureNormal("button1.png");
@@ -201,7 +201,7 @@ void HomeScene::CreateRoom(Ref *pSender, Widget::TouchEventType type) {
 void HomeScene::Simple(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
 		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
-		auto scene = GameScene::createScene(userName);
+		auto scene = GameScene::createScene(userName+'0');
 		Director::getInstance()->replaceScene(scene);
 	}
 }
@@ -209,7 +209,7 @@ void HomeScene::Simple(Ref *pSender, Widget::TouchEventType type){
 void HomeScene::Normal(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
 		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
-		auto scene = GameScene::createScene(userName);
+		auto scene = GameScene::createScene(userName+'1');
 		Director::getInstance()->replaceScene(scene);
 	}
 }
@@ -217,7 +217,7 @@ void HomeScene::Normal(Ref *pSender, Widget::TouchEventType type){
 void HomeScene::Hard(Ref *pSender, Widget::TouchEventType type){
 	if (type == Widget::TouchEventType::ENDED) {
 		SimpleAudioEngine::getInstance()->playEffect("Click.wav");
-		auto scene = GameScene::createScene(userName);
+		auto scene = GameScene::createScene(userName+'2');
 		Director::getInstance()->replaceScene(scene);
 	}
 }

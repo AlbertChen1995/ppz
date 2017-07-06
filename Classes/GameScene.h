@@ -71,10 +71,20 @@ public:
 	int robot_type = 0;
 	bool can_click = true;
 	TextField* time;
-	int dtime = 9;
+	int dtime = 5;
 
 	void GameScene::Back(Ref *pSender, Widget::TouchEventType type);
 	void GameScene::addUI();
+
+	void paly_bo_animation();
+	void paly_robot_bo_animation();
+	//Sprite* bo_first;
+	void paly_dang_animation();
+	void paly_robot_dang_animation();
+	//Sprite* qi_first;
+	void paly_qi_animation();
+	void paly_robot_qi_animation();
+	//Sprite* qi_first;
 };
 
 #endif //

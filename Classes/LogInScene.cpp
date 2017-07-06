@@ -87,6 +87,7 @@ bool LogInScene::init()
 	SimpleAudioEngine::getInstance()->preloadEffect("win.mp3");
 	SimpleAudioEngine::getInstance()->preloadEffect("lose.mp3");
 
+
 //	button->addClickEventListener(ui::Widget::ccWidgetClickCallback(LogInScene::login));
 	/**  you can create scene with following comment code instead of using csb file.
 	// 1. super init first

@@ -9,10 +9,12 @@ USING_NS_CC;
 
 using namespace cocostudio::timeline;
 
-string userName3;
+string userName3,dif;
+AI MyAI;
 Scene* GameScene::createScene(string str)
 {
-	userName3 = str;
+	dif = str[str.length()-1];
+	userName3 = str.substr(0,str.length()-1);
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
@@ -37,6 +39,7 @@ bool GameScene::init()
 
 	addUI();
 
+
 	addMouseListener();
 	visibleSize = Director::getInstance()->getVisibleSize();
 	origin = Director::getInstance()->getVisibleOrigin();
@@ -46,8 +49,8 @@ bool GameScene::init()
 	robot_touxiang = Sprite::create("touxiang.png");
 	robot_touxiang->setPosition(Vec2(visibleSize.width - touxiang->getContentSize().width / 2, visibleSize.height - touxiang->getContentSize().height / 2));
 	this->addChild(robot_touxiang, 2);
-	time = TextField::create("9", "Felt", 50);
-	time->setPosition(Vec2(20, visibleSize.height-20));
+	time = TextField::create("5", "Felt", 50);
+	time->setPosition(Vec2(visibleSize.width / 2, visibleSize.height/2));
 	this->addChild(time, 2);
 	schedule(schedule_selector(GameScene::setTime), 1.0f, kRepeatForever, 0);
 	create_qicao();
@@ -124,9 +127,12 @@ void GameScene::onMouseDown(Event* event) {
 			&& (visibleSize.height - mouseposition.y > cards[i]->getPosition().y - cards[i]->getContentSize().height / 2) && (visibleSize.height - mouseposition.y < cards[i]->getPosition().y + cards[i]->getContentSize().height / 2)) 
 		{
 				SimpleAudioEngine::getInstance()->playEffect("Click.wav");
+				if (i == 1 && qi == 0) {
+					break;
+				}
 				played = true;
 				can_click = false;
-				setTime(9.0);
+				setTime(5.0);
 				flag = type[i];
 				take_action(type[i]);
 		}			
@@ -135,10 +141,11 @@ void GameScene::onMouseDown(Event* event) {
 }
 
 void GameScene::take_action(int n) {
-	robot_type = normal(qi, robot_qi);
+	robot_type = MyAI.AIplayer(qi, robot_qi,dif);
 	//CCLOG("%d", robot_type);
 	//CCLOG("%d", robot_type);
 	if (robot_type == 1) {
+		paly_robot_qi_animation();
 		if (robot_qi < 3)
 		robot_qi++;
 		switch (robot_qi)
@@ -152,6 +159,7 @@ void GameScene::take_action(int n) {
 		}
 	}
 	if (robot_type == 2) {
+		paly_robot_bo_animation();
 		robot_qi--;
 		switch (robot_qi)
 		{
@@ -163,8 +171,12 @@ void GameScene::take_action(int n) {
 			r_qi3->setVisible(false);
 		}
 	}
+	if (robot_type == 3) {
+		paly_robot_dang_animation();
+	}
 	ismove = true;
 	if (n == 1) {
+		paly_qi_animation();
 		if (qi < 3)
 		qi++;
 		switch (qi)
@@ -182,6 +194,7 @@ void GameScene::take_action(int n) {
 			ismove = false;
 		}
 		else {
+			paly_bo_animation();
 			qi--;
 			switch (qi)
 			{
@@ -197,6 +210,7 @@ void GameScene::take_action(int n) {
 	}
 	else {
 		//dang
+		paly_dang_animation();
 	}
 	animation();
 }
@@ -251,7 +265,7 @@ void GameScene::vs_robot() {
 		if (flag == 3) {
 			paimian = Sprite::create("dang.png");
 		}
-		paimian->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 - paimian->getContentSize().height / 2));
+		paimian->setPosition(Vec2(visibleSize.width / 2 - 75, visibleSize.height / 2 - paimian->getContentSize().height / 2));
 		paimian->setVisible(false);
 		this->addChild(paimian, 2);
 		if (robot_type == 1) {
@@ -263,7 +277,7 @@ void GameScene::vs_robot() {
 		if (robot_type == 3) {
 			robotpaimian = Sprite::create("dang.png");
 		}
-		robotpaimian->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + robotpaimian->getContentSize().height / 2));
+		robotpaimian->setPosition(Vec2(visibleSize.width / 2 + 75, visibleSize.height / 2 + robotpaimian->getContentSize().height / 2));
 		robotpaimian->setVisible(false);
 		this->addChild(robotpaimian, 2);
 		if (flag == 1 && robot_type == 2) {
@@ -414,14 +428,14 @@ void GameScene::Back(Ref *pSender, Widget::TouchEventType type) {
 void GameScene::setTime(float dt) {
 	if (dtime > 0) {
 		dtime--;
-		if (dt == 9.0)
-			dtime = 9;
+		if (dt == 5.0)
+			dtime = 5;
 		char s[4];
 		sprintf(s, "%d", dtime);
 		time->setString(s);
 	}
 	else if (dtime == 0) {
-		dtime = 9;
+		dtime = 5;
 		played = true;
 		can_click = false;
 		flag = 1;
@@ -429,3 +443,104 @@ void GameScene::setTime(float dt) {
 	}
 	else return;
 }
+
+
+void GameScene::paly_bo_animation() {
+	Sprite* bo_first = Sprite::create("bo_animation/1.png");
+	bo_first->setPosition(300,visibleSize.height/2);
+	this->addChild(bo_first, 2);
+	auto bo_animation = Animation::create();
+	for (int i = 2; i < 28; i++) {
+		char szName[100] = { 0 };
+		sprintf(szName, "bo_animation/%d.png", i);
+		bo_animation->addSpriteFrameWithFile(szName);
+	}
+	bo_animation -> setDelayPerUnit(1.5f/25.0f);
+	//bo_animation->setRestoreOriginalFrame(true);
+
+	auto bo = Animate::create(bo_animation);
+	bo_first->runAction(bo);
+	//this->removeChild(bo_first);
+}
+
+void GameScene::paly_robot_bo_animation() {
+	Sprite* robot_bo_first = Sprite::create("bo_animation/1.png");
+	robot_bo_first->setPosition(700, visibleSize.height / 2);
+	this->addChild(robot_bo_first, 2);
+	auto robot_bo_animation = Animation::create();
+	for (int i = 2; i < 28; i++) {
+		char szName[100] = { 0 };
+		sprintf(szName, "bo_animation/%d.png", i);
+		robot_bo_animation->addSpriteFrameWithFile(szName);
+	}
+	robot_bo_animation->setDelayPerUnit(1.5f / 25.0f);
+	//robot_bo_animation->setRestoreOriginalFrame(true);
+
+	robot_bo_first->setFlipX(true);
+	auto robot_bo = Animate::create(robot_bo_animation);
+	robot_bo_first->runAction(robot_bo);
+	//this->removeChild(robot_bo_first);
+}
+
+void GameScene::paly_qi_animation() {
+	Sprite* qi_first = Sprite::create("qi_animation.png", Rect(0, 70, 125, 110));
+	qi_first->setPosition(300, visibleSize.height / 2);
+	this->addChild(qi_first, 2);
+	Vector<SpriteFrame*> qi_stack;
+	for (int i = 1; i < 19; i++) {
+		auto frame = SpriteFrame::create("qi_animation.png", CC_RECT_PIXELS_TO_POINTS(Rect(125*i, 70, 125, 110)));
+		qi_stack.pushBack(frame);
+	}
+	auto qi_animation = Animation::createWithSpriteFrames(qi_stack, 1.5f/18.0f);
+	auto qi = Animate::create(qi_animation);
+	qi_first->runAction(qi);
+	//this->removeChild(qi_first);
+}
+
+void GameScene::paly_robot_qi_animation() {
+	Sprite* qi_robot_first = Sprite::create("qi_animation.png", Rect(0, 70, 125, 110));
+	qi_robot_first->setPosition(700, visibleSize.height / 2);
+	this->addChild(qi_robot_first, 2);
+	Vector<SpriteFrame*> qi_robot_stack;
+	for (int i = 1; i < 19; i++) {
+		auto frame = SpriteFrame::create("qi_animation.png", CC_RECT_PIXELS_TO_POINTS(Rect(125 * i, 70, 125, 110)));
+		qi_robot_stack.pushBack(frame);
+	}
+	qi_robot_first->setFlipX(true);
+	auto qi_robot_animation = Animation::createWithSpriteFrames(qi_robot_stack, 1.5f / 18.0f);
+	auto robot_qi = Animate::create(qi_robot_animation);
+	qi_robot_first->runAction(robot_qi);
+	//this->removeChild(qi_robot_first);
+}
+
+void GameScene::paly_dang_animation() {
+	Sprite* dang_first = Sprite::create("dang_animation.png", Rect(0, 80, 125, 140));
+	dang_first->setPosition(300, visibleSize.height / 2);
+	this->addChild(dang_first, 2);
+	Vector<SpriteFrame*> dang_stack;
+	for (int i = 1; i < 8; i++) {
+		auto frame = SpriteFrame::create("dang_animation.png", CC_RECT_PIXELS_TO_POINTS(Rect(125 * i, 80, 125, 140)));
+		dang_stack.pushBack(frame);
+	}
+	auto dang_animation = Animation::createWithSpriteFrames(dang_stack, 1.5f / 6.0f);
+	auto dang = Animate::create(dang_animation);
+	dang_first->runAction(dang);
+	//this->removeChild(dang_first);
+}
+
+void GameScene::paly_robot_dang_animation() {
+	Sprite* dang_robot_first = Sprite::create("dang_animation.png", Rect(0, 80, 125, 140));
+	dang_robot_first->setPosition(700, visibleSize.height / 2);
+	this->addChild(dang_robot_first, 2);
+	Vector<SpriteFrame*> dang_robot_stack;
+	for (int i = 1; i < 8; i++) {
+		auto frame = SpriteFrame::create("dang_animation.png", CC_RECT_PIXELS_TO_POINTS(Rect(125 * i, 80, 125, 140)));
+		dang_robot_stack.pushBack(frame);
+	}
+	dang_robot_first->setFlipX(true);
+	auto dang_robot_animation = Animation::createWithSpriteFrames(dang_robot_stack, 1.5f / 6.0f);
+	auto robot_dang = Animate::create(dang_robot_animation);
+	dang_robot_first->runAction(robot_dang);
+	//this->removeChild(dang_robot_first);
+}
+
